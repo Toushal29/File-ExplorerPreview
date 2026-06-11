@@ -82,8 +82,9 @@
 		});
 	}
 
+	// Image functions
 	function zoomIn() {
-		imageZoom = Math.min(4, Number((imageZoom + 0.25).toFixed(2)));
+		imageZoom = Math.min(6, Number((imageZoom + 0.25).toFixed(2)));
 	}
 
 	function zoomOut() {
@@ -94,6 +95,19 @@
 		imageZoom = 1;
 	}
 
+	/**
+   * @param {{ deltaY: number; }} e
+   */
+	function mouseZoom(e) {
+		if (e.deltaY < 0) {
+                zoomIn();
+        } else {
+                zoomOut();
+        }
+    }
+
+
+	// Setting container
 	function toggleSettings() {
 		settingsVisible = !settingsVisible;
 	}
@@ -219,7 +233,7 @@
 
 <main class="container">
 	<header class="path-header">
-		<p>PATH - {currentPath}</p>
+		<p>PATH -- {currentPath}</p>
 		<div class="path-actions">
 			<button class="tool-button" type="button" onclick={goBack}>↩︎</button>
 			<button class="tool-button" type="button" onclick={refreshDirectory}>⟳</button>
@@ -240,12 +254,11 @@
 					bind:value={settingsStartPath}
 				/>
 			</label>
-
 			<label class="checkbox-field">
-				<input type="checkbox" bind:checked={hideDotfiles} />
 				<span>Hide files and folders starting with "."</span>
+				<input type="checkbox" bind:checked={hideDotfiles} />			
 			</label>
-
+			<span>Save </span>
 			<button class="save-button" type="button" onclick={saveSettings}>🖫</button>
 
 			{#if settingsMessage}
@@ -264,6 +277,8 @@
 			</div>
 
 			<ul>
+				<!-- svelte-ignore a11y_click_events_have_key_events -->
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 				<li class="file-row" style="font-weight: bolder;" onclick={goBack}>...</li>
 				{#each visibleFiles as item}
 					<li class:selected={selectedFile?.path === item.path}>
@@ -304,8 +319,10 @@
 					>
 						{#if previewType === 'text'}
 							<pre class="text-preview">{textContent}</pre>
+
 						{:else if previewType === 'image'}
-							<div class="image-stage-inner" class:zoomed={imageZoom > 1}>
+							<div class="image-stage-inner" class:zoomed={imageZoom > 1} onwheel={mouseZoom}>
+							
 								<img
 									class="image-preview"
 									src={imageUrl}
@@ -389,7 +406,7 @@
 	}
 
 	.settings-panel {
-		background: #e2e2e2;
+		background: #e4e4e4;
 	}
 
 	.path-header {
@@ -419,8 +436,8 @@
 	.tool-button,
 	.save-button,
 	.zoom-toolbar button {
-		height: 35px;
-		width: 35px;
+		height: 40px;
+		width: 40px;
 		border: 1px solid #cbd3dc;
 		border-radius: 7px;
 		background: #ffffff;
@@ -435,11 +452,11 @@
 	}
 
 	.settings-panel {
-		flex-shrink: 0;
-		display: flex;
-		gap: 16px;
+		/* flex-shrink: 0; */
+		/* display: flex; */
+		/* gap: 16px; */
 		align-items: end;
-		padding: 12px 14px;
+		padding: 15px;
 	}
 
 	.start-path-field,
@@ -448,12 +465,13 @@
 		gap: 8px;
 		color: #000000;
 		font-size: 15px;
+		margin-bottom: 10px;
 	}
 
 	.start-path-field {
 		flex-direction: column;
 		flex: 1;
-		max-width: 500px;
+		max-width: 750px;
 	}
 
 	.start-path-field input {
@@ -631,7 +649,7 @@
 		min-height: 0;
 		border: 1px solid #d7dce2;
 		border-radius: 8px;
-		background: rgb(40, 40, 40);
+		background: rgb(255, 255, 255);
 		overflow: auto;
 	}
 
@@ -641,7 +659,7 @@
 		min-height: 0;
 		border: 1px solid #d7dce2;
 		border-radius: 8px;
-		background: rgb(37, 37, 37);
+		background: rgb(20, 20, 20);
 		overflow: auto;
 	}
 
@@ -690,7 +708,7 @@
 		max-width: none;
 		max-height: none;
 		object-fit: contain;
-		transition: width 120ms ease;
+		transition: 200ms ease;
 	}
 
 	.image-stage-inner:not(.zoomed) .image-preview {
@@ -746,10 +764,6 @@
 		.path-actions {
 			width: 100%;
 			flex-wrap: wrap;
-		}
-
-		.tool-button {
-			flex: 1;
 		}
 
 		.explorer-container {
