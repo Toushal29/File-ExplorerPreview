@@ -2,6 +2,10 @@
 	import { convertFileSrc, invoke } from '@tauri-apps/api/core';
 	import { onMount } from 'svelte';
 
+	import { HighlightAuto } from "svelte-highlight";
+	// import 'svelte-highlight/styles/github.css';
+	import 'svelte-highlight/styles/atom-one-dark.css';
+
 	/** @typedef {{ name: string, path: string, is_dir: boolean, file_type: string, size: number, modified: number | null }} FileEntry */
 	/** @typedef {'text' | 'image' | 'pdf' | 'audio' | 'video' | 'unsupported' | null} PreviewType */
 	/** @typedef {{ start_path: string | null, hide_dotfiles: boolean }} AppSettings */
@@ -121,10 +125,10 @@
 	/**
 	 * @param {string} path
 	 */
-	async function loadDirectory(path) {
-		selectedFile = null;
-		previewType = null;
-		clearPreview();
+	async function loadDirectory(path, addToHistory = true) {
+		// selectedFile = null;
+		// previewType = null;
+		// clearPreview();
 
 		try {
 			files = await invoke('list_directory', { path });
@@ -285,7 +289,7 @@
 			<ul>
 				<!-- svelte-ignore a11y_click_events_have_key_events -->
 				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<li class="file-row" style="font-weight: bolder;" onclick={goBack}>...</li>
+				<li class="file-row" style="font-weight: bolder;" onclick={goBack} title="Go Back up">...</li>
 				{#each visibleFiles as item}
 					<li class:selected={selectedFile?.path === item.path}>
 						<button class="file-row" type="button" onclick={() => openItem(item)}>
@@ -324,8 +328,9 @@
 						class:image-stage={previewType === 'image'}
 					>
 						{#if previewType === 'text'}
-							<pre class="text-preview">{textContent}</pre>
-
+							{#key selectedFile?.path}
+								<HighlightAuto code={textContent} class="text-stage"/>
+							{/key}
 						{:else if previewType === 'image'}
 							<div class="image-stage-inner" class:zoomed={imageZoom > 1} onwheel={mouseZoom}>
 							
@@ -434,7 +439,7 @@
 		gap: 10px;
 		flex-shrink: 0;
 		font-size: 20px;
-		width: 200px;
+		/* width: 200px; */
 		/* Test V */
 		/* background-color: chocolate; */
 	}
@@ -714,20 +719,30 @@
 		min-height: 0;
 		border: 1px solid #cbd3dc;
 		border-radius: 8px;
-		background: rgb(30, 30, 30);
+		background: rgb(255, 255, 255);
+		/* padding: 5px; */
 		overflow: auto;
 		/* Test V */
 		/* background: palevioletred; */
 	}
 
-	.text-preview {
-		font-size: 14px;
+	.text-stage :global(pre) {
 		margin: 0;
-		padding: 8px;
+		font-size: 14px;
 		white-space: pre-wrap;
 		word-break: break-word;
-		color: white;
-		line-height: 1.5;
+		background: transparent;
+	}
+
+	.text-stage :global(code) {
+		padding: 5px;
+		height: calc(100vh - 75px);
+		font-family:
+			'JetBrains Mono',
+			'Fira Code',
+			'Cascadia Code',
+			Consolas,
+			monospace;
 	}
 
 	/* ------Preview Stage------ */
