@@ -45,6 +45,7 @@
 		return convertFileSrc(path);
 	}
 
+	// file size
 	/**
 	 * @param {number} size
 	 */
@@ -65,6 +66,7 @@
 		return `${value >= 10 || unitIndex === 0 ? value.toFixed(0) : value.toFixed(1)} ${units[unitIndex]}`;
 	}
 
+	// date time
 	/**
 	 * @param {number | null} modified
 	 */
@@ -144,6 +146,7 @@
 		}
 
 		selectedFile = item;
+		previewVisible = true
 		clearPreview();
 
 		try {
@@ -185,6 +188,7 @@
 		}
 	}
 
+	// go back up directory
 	async function goBack() {
 		const parts = currentPath.split('\\');
 
@@ -194,12 +198,14 @@
 		}
 	}
 
+	// refresh function
 	async function refreshDirectory() {
 		if (currentPath) {
 			await loadDirectory(currentPath);
 		}
 	}
 
+	// saving the user state - path + hidden files
 	async function saveSettings() {
 		const startPath = settingsStartPath.trim();
 		const settings = /** @type {AppSettings} */ ({
@@ -234,15 +240,15 @@
 <main class="container">
 	<header class="path-header">
 		<p>PATH -- {currentPath}</p>
-		<div class="path-actions">
-			<button class="tool-button" type="button" onclick={goBack}>↩︎</button>
-			<button class="tool-button" type="button" onclick={refreshDirectory}>⟳</button>
-			<button class="tool-button" type="button" onclick={togglePreview}>
-				{previewVisible ? '◨' : '◫'}
-			</button>
-			<button class="tool-button" type="button" onclick={toggleSettings}>⋮</button>
-		</div>
 	</header>
+	<div class="path-actions">
+		<button class="tool-button" type="button" title="Back" onclick={goBack}>↩︎</button>
+		<button class="tool-button" type="button" title="Refresh Directory" onclick={refreshDirectory}>⟳</button>
+		<button class="tool-button" type="button" title="Show/Hide Preview Panel" onclick={togglePreview}>
+			{previewVisible ? '◨' : '◫'}
+		</button>
+		<button class="tool-button" type="button" title="Settings" onclick={toggleSettings} >⋮</button>
+	</div>
 
 	{#if settingsVisible}
 		<section class="settings-panel" aria-label="Settings">
@@ -259,7 +265,7 @@
 				<input type="checkbox" bind:checked={hideDotfiles} />			
 			</label>
 			<span>Save </span>
-			<button class="save-button" type="button" onclick={saveSettings}>🖫</button>
+			<button class="save-button" type="button" title="Save" onclick={saveSettings}>🖫</button>
 
 			{#if settingsMessage}
 				<p class="settings-message">{settingsMessage}</p>
@@ -270,10 +276,10 @@
 	<div class="explorer-container">
 		<section class="file-list" aria-label="Files">
 			<div class="table-header">
-				<span>Name</span>
-				<span>Type</span>
-				<span>Size</span>
-				<span>Modified</span>
+				<span>NAME</span>
+				<span>TYPE</span>
+				<span>SIZE</span>
+				<span>LAST MODIFIED</span>
 			</div>
 
 			<ul>
@@ -372,132 +378,148 @@
 </main>
 
 <style>
+	/* ------GLOBAL CSS------ */
 	:global(html),
 	:global(body) {
 		margin: 0;
 		padding: 0;
 		height: 100%;
 		overflow: hidden;
-		background: #edf0f3;
-		color: #1d2733;
+		color: black;
+		background: #eceef0;
+		font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 	}
 
-	:global(body) {
-		font-family:
-			Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-	}
-
+	/* Buttons and Inputs css */
 	button,
 	input {
 		font: inherit;
 	}
 
+	/* ------Container<main>------ */
 	.container {
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		box-sizing: border-box;
 		overflow: hidden;
+		/* Test V */
+		/* background: greenyellow; */
 	}
 
-	.path-header,
-	.explorer-container {
-		background: #f1f1f1;
-	}
-
-	.settings-panel {
-		background: #e4e4e4;
-	}
-
+	/* ------HEADER------ */
 	.path-header {
 		flex-shrink: 0;
 		align-items: center;
-		padding: 12px 14px;
+		padding: 10px 10px;
+		/* Test V */
+		/* background: green; */
 	}
 
 	.path-header p {
-		font-weight: 500;
-		margin: 0 0 10px 10px;
-		color: #531a81;
+		font-weight: 600;
+		margin: 0px;
+		color: #491a70;
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		/* Test V */
+		/* background: wheat; */
 	}
 
-	.path-actions,
-	.zoom-toolbar {
+	.path-actions {
 		display: flex;
+		/* padding: 5px; */
+		margin-left: 10px;
 		gap: 10px;
-		align-items: center;
 		flex-shrink: 0;
 		font-size: 20px;
+		width: 200px;
+		/* Test V */
+		/* background-color: chocolate; */
 	}
 
-	.tool-button,
-	.save-button,
-	.zoom-toolbar button {
+	.tool-button {
 		height: 40px;
 		width: 40px;
 		border: 1px solid #cbd3dc;
-		border-radius: 7px;
-		background: #ffffff;
-		color: #172230;
+		border-radius: 8px;
 		cursor: pointer;
+		background: white;
+		font-weight: 600;
+		margin-bottom: 8px;
+		/* Test V */
+		/* background: yellow; */
 	}
 
-	.tool-button:hover,
-	.save-button:hover,
-	.zoom-toolbar button:hover {
+	.tool-button:hover {
 		background: #f3f6f9;
 	}
 
+	/* ------SETTING------ */
 	.settings-panel {
-		/* flex-shrink: 0; */
-		/* display: flex; */
-		/* gap: 16px; */
-		align-items: end;
-		padding: 15px;
-	}
-
-	.start-path-field,
-	.checkbox-field {
-		display: flex;
-		gap: 8px;
-		color: #000000;
-		font-size: 15px;
-		margin-bottom: 10px;
+		margin: 0px 8px 8px 8px;
+		border-radius: 8px;
+		border-style: solid;
+		border-width: 1px;
+		background: white;
+		padding: 8px;
 	}
 
 	.start-path-field {
+		display: flex;
 		flex-direction: column;
-		flex: 1;
-		max-width: 750px;
+		/* Test V */
+		/* background: brown; */
 	}
 
 	.start-path-field input {
 		height: 30px;
 		border: 1px solid #cbd3dc;
-		border-radius: 7px;
-		padding: 0 10px;
+		border-radius: 8px;
+		padding: 0 8px;
 		color: #1d2733;
 	}
 
 	.checkbox-field {
+		margin-top: 10px;
+		display: flex;
+		gap: 25px;
+		margin-bottom: 10px;
 		align-items: center;
-		padding-bottom: 8px;
+	}
+
+	.save-button {
+		height: 40px;
+		width: 40px;
+		border: 1px solid #cbd3dc;
+		border-radius: 8px;
+		background: white;
+		cursor: pointer;
+		font-size: 20px;
+		transition: 100ms;
+	}
+
+	.save-button:hover {
+		background: #f3f6f9;
+		transform: scale(1.1);
+		transition: 100ms;
 	}
 
 	.settings-message {
-		margin: 0 0 8px;
+		margin: 5px 0px 0px 0px;
 		color: #607080;
-		font-size: 13px;
+		font-size: 12px;
 	}
 
+	/* ------File Explorer------ */
 	.explorer-container {
 		flex: 1;
 		display: flex;
 		min-height: 0;
-		overflow: hidden;
+		/* overflow: hidden; */
+		/* Test V */
+		/* background: pink; */
 	}
 
 	.file-list {
@@ -505,37 +527,35 @@
 		min-width: 0;
 		overflow: auto;
 	}
-
-	.table-header,
-	.file-row {
+	
+	.table-header {
 		display: grid;
 		grid-template-columns: minmax(220px, 1fr) 130px 95px 170px;
 		align-items: center;
-		gap: 12px;
-	}
-
-	.table-header {
+		gap: 10px;
 		position: sticky;
 		top: 0;
 		z-index: 2;
 		padding: 12px 20px;
-		border-bottom: 1px solid #e3e7eb;
+		/* border-bottom: 1px solid #e3e7eb; */
 		background: #f8fafc;
 		color: #607080;
 		font-size: 12px;
 		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0;
 	}
 
 	ul {
 		margin: 0;
 		padding: 6px;
+		/* Test V */
+		/* background: blue; */
 	}
 
 	li {
 		list-style: none;
-		border-radius: 7px;
+		border-radius: 8px;
+		/* Test V */
+		/* background: palegreen; */
 	}
 
 	li:hover {
@@ -549,35 +569,43 @@
 	}
 
 	.file-row {
+		display: grid;
+		grid-template-columns: minmax(220px, 1fr) 130px 95px 170px;
+		align-items: center;
+		gap: 10px;
 		width: 100%;
 		border: 0;
 		background: transparent;
 		color: inherit;
-		padding: 10px 10px;
+		padding: 8px 8px;
 		text-align: left;
 		cursor: pointer;
+		/* Test V */
+		/* background: red; */
 	}
 
 	.file-name-cell {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 		min-width: 0;
-	}
-
-	.folder-icon,
-	.file-icon {
-		width: 22px;
-		height: 18px;
-		border-radius: 4px;
-		flex-shrink: 0;
+		/* Test V */
+		/* background: pink; */
 	}
 
 	.folder-icon {
+		width: 25px;
+		height: 20px;
+		border-radius: 5px;
+		flex-shrink: 0;
 		background: linear-gradient(#e6b94f 0 32%, #d79a2b 32%);
 	}
 
 	.file-icon {
+		width: 25px;
+		height: 20px;
+		border-radius: 5px;
+		flex-shrink: 0;
 		border: 1px solid #b6c2cf;
 		background: linear-gradient(135deg, #ffffff 0 72%, #d7dce2 72%);
 	}
@@ -589,30 +617,38 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+		/* Test V */
+		/* background: coral; */
 	}
 
 	.file-type,
 	.file-size,
 	.file-modified {
 		color: #607080;
-		font-size: 13px;
+		font-size: 14px;
 	}
 
 	.empty-list {
 		color: #607080;
 		margin: 28px;
+		/* Test V */
+		/* background: violet; */
 	}
 
+	/* ------Preview Panel------ */
 	.preview-panel {
+		margin-top: -50px;
 		margin-bottom: 20px;
+		margin-right: 5px;
+		margin-left: 5px;
 		width: 50%;
 		min-width: 330px;
-		max-width: 90%;
+		max-width: calc(100% - 200px);
 		display: flex;
 		flex-direction: column;
-		padding: 5px;
+		/* padding: 5px; */
 		box-sizing: border-box;
-		background: #ffffff;
+		/* background: #ffffff; */
 		/* border-left: 1px solid #d7dce2; */
 		resize: horizontal;
 		overflow: auto;
@@ -627,62 +663,91 @@
 		color: #8a1f11;
 		background: #fff2ef;
 		border: 1px solid #f1b4aa;
-		border-radius: 7px;
-		padding: 8px 10px;
+		border-radius: 8px;
+		padding: 8px 8px;
 		margin: 0;
 	}
 
+	/* ------Preview Panel - Image Panel Zoom------ */
 	.zoom-toolbar {
 		justify-content: center;
-		padding: 4px 0 8px;
+		padding: 6px;
+		background-color: #d3d5d8;
+		margin: 0px 0px 5px 0px;
+		border-radius: 8px;
+		border: 1px solid #cbd3dc;
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		flex-shrink: 0;
+		font-size: 18px;
+		font-weight: 600;
+		/* Test V */
+		/* background: chocolate; */
 	}
 
 	.zoom-toolbar span {
 		min-width: 40px;
 		text-align: center;
 		color: #607080;
-		font-size: 15px;
+		font-size: 18px;
+		/* Test V */
+		/* background: brown; */
 	}
 
-	.preview-stage {
-		flex: 1;
-		min-height: 0;
-		border: 1px solid #d7dce2;
+	.zoom-toolbar button {
+		height: 30px;
+		width: 30px;
+		border: 1px solid #cbd3dc;
 		border-radius: 8px;
-		background: rgb(255, 255, 255);
-		overflow: auto;
+		background: white;
+		cursor: pointer;
 	}
 
+	.zoom-toolbar button:hover {
+		background: #f3f6f9;
+	}
 
+	/* ------Preview Panel - Text Panel------ */
 	.text-stage {
 		flex: 1;
 		min-height: 0;
-		border: 1px solid #d7dce2;
+		border: 1px solid #cbd3dc;
 		border-radius: 8px;
-		background: rgb(20, 20, 20);
+		background: rgb(30, 30, 30);
 		overflow: auto;
-	}
-
-	.preview-stage {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		/* padding: 14px; */
-	}
-
-	.image-stage {
-		display: block;
-		padding: 0;
+		/* Test V */
+		/* background: palevioletred; */
 	}
 
 	.text-preview {
 		font-size: 14px;
 		margin: 0;
-		/* padding: 16px; */
+		padding: 8px;
 		white-space: pre-wrap;
 		word-break: break-word;
-		color: #ffffff;
+		color: white;
 		line-height: 1.5;
+	}
+
+	/* ------Preview Stage------ */
+	.preview-stage {
+		flex: 1;
+		min-height: 0;
+		border: 1px solid #cbd3dc;
+		border-radius: 8px;
+		background: white;
+		overflow: auto;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		/* padding: 14px; */
+		/* Test V */
+		/* background: paleturquoise; */
+	}
+
+	.image-stage {
+		display: block;
 	}
 
 	.image-stage-inner {
@@ -691,8 +756,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 10px;
+		padding: 5px;
 		box-sizing: border-box;
+		/* background: rgba(0, 0, 0, 0.8); */
 	}
 
 	.image-stage-inner.zoomed {
@@ -700,6 +766,12 @@
 		justify-content: flex-start;
 		min-width: 100%;
 		min-height: 100%;
+	}
+
+	.image-stage-inner:not(.zoomed) .image-preview {
+		width: auto;
+		max-width: 100%;
+		max-height: calc(100vh - 200px);
 	}
 
 	.image-preview {
@@ -711,20 +783,16 @@
 		transition: 200ms ease;
 	}
 
-	.image-stage-inner:not(.zoomed) .image-preview {
-		width: auto;
-		max-width: 100%;
-		max-height: calc(100vh - 200px);
-	}
-
+	/* ------Preview Panel - PDF Panel------ */
 	.pdf-preview {
 		width: 100%;
-		height: calc(100vh - 120px);
+		height: calc(100vh - 70px);
 		/* min-height: 420px; */
 		border: 0;
-		background: rgb(0, 0, 0);
+		/* background: rgb(0, 0, 0); */
 	}
 
+	/* ------Preview Panel - Video Panel------ */
 	.audio-preview,
 	.video-preview {
 		width: 100%;
@@ -736,9 +804,9 @@
 	}
 
 	.empty-preview {
-		color: #607080;
 		margin: 0;
 		text-align: center;
+		background: white;
 	}
 
 	.empty-preview-large {
@@ -746,10 +814,12 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border: 1px dashed #cbd3dc;
+		border: 1px solid #cbd3dc;
 		border-radius: 8px;
 	}
 
+
+	/* ------Media------ */
 	@media (max-width: 700px) {
 		.path-header,
 		.settings-panel {
