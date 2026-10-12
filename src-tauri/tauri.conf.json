@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "file-explorerpreview",
-  "version": "0.1.0",
-  "identifier": "com.toush.file-explorerpreview",
+  "productName": "File Explorer-Preview",
+  "version": "0.2.0",
+  "identifier": "com.toush.file-explorer-preview",
   "build": {
     "beforeDevCommand": "pnpm dev",
     "devUrl": "http://localhost:1420",
@@ -12,9 +12,11 @@
   "app": {
     "windows": [
       {
-        "title": "File-ExplorerPreview",
-        "width": 800,
-        "height": 600
+        "title": "File Explorer-Preview",
+        "width": 1360,
+        "height": 860,
+        "minWidth": 600,
+        "minHeight": 420
       }
     ],
     "security": {

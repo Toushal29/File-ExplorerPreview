@@ -1,7 +1,7 @@
 {
-  "name": "file-explorerpreview",
-  "version": "0.1.0",
-  "description": "",
+  "name": "file-explorer-preview",
+  "version": "0.2.0",
+  "description": "A desktop file browser with quick previews for text, images, PDFs, audio, and video.",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
